@@ -1,0 +1,76 @@
+{"docs" :[{
+  "_id": {
+    "$oid": "5c4adb701ee18e5fbe18f9c8"
+  },
+  "id": "1",
+  "groupName": "groupNameFirst",
+  "courseName": "courseNameFirst",
+  "courseVsId": 111,
+  "examinersJson": [
+    {
+      "vsid": 15523,
+      "name": "Леонтьев Семен Гаврилович"
+    },
+    {
+      "vsid": 191,
+      "name": "Иванов Иван Иванович"
+    }
+  ],
+  "teachersJson": [
+    {
+      "vsid": 11212,
+      "name": "Селиванов Селиван Селиванович"
+    }
+  ],
+  "persent": 50
+}
+,
+{
+  "_id": {
+    "$oid": "5c4adb701ee18e5fbe18f9c9"
+  },
+  "id": "2",
+  "groupName": "groupNameSecond",
+  "courseName": "courseNameSecond",
+  "courseVsId": 111,
+  "examinersJson": [
+    {
+      "vsid": 15523,
+      "name": "Леонтьев Семен Гаврилович"
+    }
+  ],
+  "teachersJson": [
+    {
+      "vsid": 11212,
+      "name": "Селиванов Селиван Селиванович"
+    },
+    {
+      "vsid": 191,
+      "name": "Иванов Иван Иванович"
+    }
+  ],
+  "persent": 50
+}
+,
+{
+  "_id": {
+    "$oid": "5c4adb701ee18e5fbe18f9ca"
+  },
+  "id": "3",
+  "groupName": "groupNameThird",
+  "courseName": "courseNameThird",
+  "courseVsId": 111,
+  "examinersJson": [
+    {
+      "vsid": 15523,
+      "name": "Леонтьев Семен Гаврилович"
+    }
+  ],
+  "teachersJson": [
+    {
+      "vsid": 11212,
+      "name": "Селиванов Селиван Селиванович"
+    }
+  ],
+  "persent": 50
+}]}

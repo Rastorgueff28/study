@@ -1,0 +1,11 @@
+.idea/
+**/target/**
+*.class
+*.lst
+*.java.html
+**/surefire-reports/**
+*.iml
+**/.project
+**/.classpath
+**/.settings/
+balancer/src/main/resources/static/**

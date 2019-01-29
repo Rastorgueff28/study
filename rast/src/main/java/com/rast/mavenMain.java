@@ -21,53 +21,30 @@ import java.util.stream.Collectors;
 public class mavenMain {
     public static void main(String[] args) {
 
-        String fileName = "C:\\Users\\arastorguev\\Desktop\\TestPP.pptx";
-        String changedFileName = "C:\\Users\\arastorguev\\Desktop\\TestPP - Copy.pptx";
+        String fileName = "D:\\workspace\\study\\rast\\src\\main\\resources\\TestPP.pptx";
+        String changedFileName = "D:\\workspace\\study\\rast\\src\\main\\resources\\TestPP - copy.pptx";
         try {
 
-            XMLSlideShow ppt = new XMLSlideShow(new FileInputStream(fileName));
-
-
-            double zoom = 2; // magnify it by 2
-            AffineTransform at = new AffineTransform();
-            at.setToScale(zoom, zoom);
-
-            Dimension pgsize = ppt.getPageSize();
-
-            List<XSLFSlide> slide = ppt.getSlides();
-            List<Long> hashes = new ArrayList<>();
-            for (int i = 0; i < slide.size(); i++) {
-                BufferedImage img = new BufferedImage((int) Math.ceil(pgsize.width * zoom), (int) Math.ceil(pgsize.height * zoom), BufferedImage.TYPE_3BYTE_BGR);
-                Graphics2D graphics = img.createGraphics();
-                graphics.setTransform(at);
-
-                graphics.setPaint(Color.white);
-                graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height));
-                slide.get(i).draw(graphics);
-                FileOutputStream out = new FileOutputStream("slide-" + (i + 1) + ".png");
-                javax.imageio.ImageIO.write(img, "png", out);
-                out.close();
-                hashes.add( IOUtils.calculateChecksum(((DataBufferByte) img.getRaster().getDataBuffer()).getData()));
-
-            }
-
-for(Long hash : hashes){
-    System.out.println(hash);
-
-}
+                XMLSlideShow ppt = new XMLSlideShow(new FileInputStream(fileName));
                 SlideShowExtractor pptExtractor = new SlideShowExtractor(ppt);
                 List<XSLFSlide> pptSlides = ppt.getSlides();
                 List<XSLFPictureData> pptPictures = ppt.getPictureData();
                 String pptMD5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(new FileInputStream(fileName));
-
+                List<Long> ppthashes = getSlidesHashes(ppt);
 
                 XMLSlideShow changedPpt = new XMLSlideShow(new FileInputStream(changedFileName));
                 SlideShowExtractor changedPptExtractor = new SlideShowExtractor(changedPpt);
                 List<XSLFSlide> changedPptSlides = changedPpt.getSlides();
                 List<XSLFPictureData> changedPptPictures = changedPpt.getPictureData();
                 String changedPptMD5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(new FileInputStream(changedFileName));
+                List<Long> changedPpthashes = getSlidesHashes(changedPpt);
 
 
+            System.out.println(ppthashes);
+            System.out.println(changedPpthashes);
+            System.out.println(getPresentationsDiff(ppthashes, changedPpthashes));
+
+            System.out.println(pptMD5.equals(changedPptMD5));
 
 
         } catch (Exception e) {
@@ -83,16 +60,36 @@ for(Long hash : hashes){
     protected static List<XSLFShape> getShapeWithPictures(XSLFSlide slide){
        return slide.getShapes().stream().filter(obj -> obj instanceof XSLFPictureShape).collect(Collectors.toList());
     }
-    protected static Boolean compareSlidesByPictures(XSLFSlide source, XSLFSlide target){
+    protected static List<Long> getSlidesHashes(final XMLSlideShow presentation){
 
-        List<XSLFShape> sourceShapes = getShapeWithPictures(source);
+        double zoom = 2; // magnify it by 2
+        AffineTransform at = new AffineTransform();
+        at.setToScale(zoom, zoom);
 
-        List<XSLFShape> targetShapes = getShapeWithPictures(target);
+        Dimension pgsize = presentation.getPageSize();
 
-        return  false;
+        List<XSLFSlide> slides = presentation.getSlides();
+        List<Long> hashes = new ArrayList<>();
 
+        for (XSLFSlide slide : slides) {
+            BufferedImage img = new BufferedImage((int) Math.ceil(pgsize.width * zoom), (int) Math.ceil(pgsize.height * zoom), BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D graphics = img.createGraphics();
+            graphics.setTransform(at);
+
+            graphics.setPaint(Color.white);
+            graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height));
+            slide.draw(graphics);
+            hashes.add( IOUtils.calculateChecksum(((DataBufferByte) img.getRaster().getDataBuffer()).getData()));
+        }
+       return hashes;
     }
+    protected static List<Long> getPresentationsDiff (final List<Long> source, final List<Long> target){
 
+        if(source.removeAll(target)){
+            return source;
+        }
+        return null;
+    }
 
 
 }

@@ -1,16 +1,20 @@
 package com.rast;
 
 import org.apache.poi.sl.extractor.SlideShowExtractor;
+import org.apache.poi.util.IOUtils;
 import org.apache.poi.xslf.usermodel.*;
 
+import javax.naming.ldap.HasControls;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,8 +35,9 @@ public class mavenMain {
             Dimension pgsize = ppt.getPageSize();
 
             List<XSLFSlide> slide = ppt.getSlides();
+            List<Long> hashes = new ArrayList<>();
             for (int i = 0; i < slide.size(); i++) {
-                BufferedImage img = new BufferedImage((int) Math.ceil(pgsize.width * zoom), (int) Math.ceil(pgsize.height * zoom), BufferedImage.TYPE_INT_RGB);
+                BufferedImage img = new BufferedImage((int) Math.ceil(pgsize.width * zoom), (int) Math.ceil(pgsize.height * zoom), BufferedImage.TYPE_3BYTE_BGR);
                 Graphics2D graphics = img.createGraphics();
                 graphics.setTransform(at);
 
@@ -42,7 +47,14 @@ public class mavenMain {
                 FileOutputStream out = new FileOutputStream("slide-" + (i + 1) + ".png");
                 javax.imageio.ImageIO.write(img, "png", out);
                 out.close();
+                hashes.add( IOUtils.calculateChecksum(((DataBufferByte) img.getRaster().getDataBuffer()).getData()));
 
+            }
+
+for(Long hash : hashes){
+    System.out.println(hash);
+
+}
                 SlideShowExtractor pptExtractor = new SlideShowExtractor(ppt);
                 List<XSLFSlide> pptSlides = ppt.getSlides();
                 List<XSLFPictureData> pptPictures = ppt.getPictureData();
@@ -56,7 +68,7 @@ public class mavenMain {
                 String changedPptMD5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(new FileInputStream(changedFileName));
 
 
-            }
+
 
         } catch (Exception e) {
             e.printStackTrace();

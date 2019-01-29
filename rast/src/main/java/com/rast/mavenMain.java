@@ -1,13 +1,11 @@
 package com.rast;
 
 import org.apache.poi.sl.extractor.SlideShowExtractor;
-import org.apache.poi.util.IOUtils;
 import org.apache.poi.xslf.usermodel.*;
 
 import java.io.FileInputStream;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class mavenMain {
     public static void main(String[] args) {
@@ -29,8 +27,6 @@ public class mavenMain {
             List<XSLFPictureData> changedPptPictures = changedPpt.getPictureData();
             String changedPptMD5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(new FileInputStream(changedFileName));
 
-            System.out.println(slideHasPicture(pptSlides.get(3)));
-
 
 
 
@@ -41,9 +37,24 @@ public class mavenMain {
 
     }
 
-    public static Boolean slideHasPicture(XSLFSlide slide){
+    protected static Boolean slideHasPicture(XSLFSlide slide){
         return slide.getShapes().stream().filter(obj -> obj instanceof XSLFPictureShape).count() > 0;
     }
+
+    protected static List<XSLFShape> getShapeWithPictures(XSLFSlide slide){
+       return slide.getShapes().stream().filter(obj -> obj instanceof XSLFPictureShape).collect(Collectors.toList());
+    }
+    protected static Boolean compareSlidesByPictures(XSLFSlide source, XSLFSlide target){
+
+        List<XSLFShape> sourceShapes = getShapeWithPictures(source);
+
+        List<XSLFShape> targetShapes = getShapeWithPictures(target);
+
+        return  false;
+
+    }
+
+
 
 }
 
